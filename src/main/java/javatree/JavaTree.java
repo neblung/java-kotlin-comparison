@@ -1,4 +1,6 @@
-package toy;
+package javatree;
+
+import tree.Tree;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -6,18 +8,18 @@ import javax.json.JsonValue;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class JToy {
+public class JavaTree implements Tree {
     private final String root;
     private final Map<String, List<String>> childMap;
     private final Collection<String> loops;
 
-    private JToy(String root, Map<String, List<String>> childMap, Collection<String> loops) {
+    private JavaTree(String root, Map<String, List<String>> childMap, Collection<String> loops) {
         this.root = root;
         this.childMap = childMap;
         this.loops = loops;
     }
 
-    public static JToy parse(JsonObject jsonTree) {
+    public static JavaTree parse(JsonObject jsonTree) {
         JsonObject root = jsonTree.getJsonObject("root");
         return new Builder().build(root);
     }
@@ -39,9 +41,9 @@ public class JToy {
         private final Collection<String> loops = new HashSet<>();
         private final Deque<String> nameStack = new LinkedList<>();
 
-        JToy build(JsonObject root) {
+        JavaTree build(JsonObject root) {
             String rootName = walk(root);
-            return new JToy(rootName, childMap, loops);
+            return new JavaTree(rootName, childMap, loops);
         }
 
         private String walk(JsonObject node) {

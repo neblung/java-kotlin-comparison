@@ -1,28 +1,31 @@
-package toy
+package kotlintree
 
+import tree.Tree
 import java.util.*
 import javax.json.JsonArray
 import javax.json.JsonObject
 import javax.json.JsonValue
 
-class KToy(
-    val root: String,
-    val childMap: Map<String, List<String>>,
-    val loops: Collection<String>
-) {
-    fun getChildren(parent: String) = childMap[parent] ?: emptyList()
+class KotlinTree(
+    private val _root: String,
+    private val childMap: Map<String, List<String>>,
+    private val _loops: Collection<String>
+) : Tree {
+    override fun getRoot() = _root
+    override fun getLoops() = _loops
+    override fun getChildren(parent: String) = childMap[parent] ?: emptyList()
 }
 
-fun parseToy(jsonTree: JsonObject) = Builder().build(jsonTree.getJsonObject("root"))
+fun parse(jsonTree: JsonObject) = Builder().build(jsonTree.getJsonObject("root"))
 
 private class Builder {
     private val childMap = mutableMapOf<String, List<String>>()
     private val loops = mutableSetOf<String>()
     private val nameStack = LinkedList<String>()
 
-    fun build(root: JsonObject): KToy {
+    fun build(root: JsonObject): KotlinTree {
         val rootName = walk(root) ?: error("returns never null for root")
-        return KToy(rootName, childMap, loops)
+        return KotlinTree(rootName, childMap, loops)
     }
 
     private fun walk(node: JsonObject): String? {

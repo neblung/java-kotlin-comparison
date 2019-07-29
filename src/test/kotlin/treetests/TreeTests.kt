@@ -1,16 +1,19 @@
-package toy
+package treetests
 
+import javatree.JavaTree
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import tree.Tree
 import java.io.StringReader
 import javax.json.Json
 import javax.json.JsonObject
 
-class ToyTests {
+abstract class TreeTests {
     // method under test
-//    private fun parse(json: String) = JToy.parse(json.toJsonObject())
-    private fun parse(json: String) = parseToy(json.toJsonObject())
+    private fun parse(json: String) = doParse(json.toJsonObject())
+
+    abstract fun doParse(jsonObject: JsonObject): Tree
 
     @Test
     fun `get started`() {
@@ -30,13 +33,13 @@ class ToyTests {
           }
         """
 
-        val toy = parse(json)
+        val tree = parse(json)
 
-        toy.root shouldBe "class"
-        toy.getChildren("class").shouldContainOnly("method", "field")
-        toy.getChildren("method").shouldBeEmpty()
-        toy.getChildren("field").shouldBeEmpty()
-        toy.loops.shouldBeEmpty()
+        tree.root shouldBe "class"
+        tree.getChildren("class").shouldContainOnly("method", "field")
+        tree.getChildren("method").shouldBeEmpty()
+        tree.getChildren("field").shouldBeEmpty()
+        tree.loops.shouldBeEmpty()
     }
 
     @Test
@@ -57,12 +60,12 @@ class ToyTests {
           }
         """
 
-        val toy = parse(json)
+        val tree = parse(json)
 
-        toy.root shouldBe "package"
-        toy.getChildren("package").shouldContainOnly("class")
-        toy.getChildren("class").shouldBeEmpty()
-        toy.loops.shouldContainOnly("package")
+        tree.root shouldBe "package"
+        tree.getChildren("package").shouldContainOnly("class")
+        tree.getChildren("class").shouldBeEmpty()
+        tree.loops.shouldContainOnly("package")
     }
 
     @Test
@@ -109,6 +112,14 @@ class ToyTests {
     }
 }
 
+class JavaTests : TreeTests() {
+    override fun doParse(jsonObject: JsonObject): Tree = JavaTree.parse(jsonObject)
+}
+
+class KotlinTests : TreeTests() {
+    override fun doParse(jsonObject: JsonObject) = kotlintree.parse(jsonObject)
+}
+
 private fun <E> Collection<E>.shouldContainOnly(vararg expected: E) {
     Assertions.assertThat(this).containsOnly(*expected)
 }
@@ -118,13 +129,6 @@ private fun <E> Collection<E>.shouldBeEmpty() {
 }
 
 private fun String.toJsonObject(): JsonObject = Json.createReader(StringReader(this)).readObject()
-
-private infix fun JsonObject?.shouldBe(expected: String?) {
-    when (expected) {
-        null -> Assertions.assertThat(this).isNull()
-        else -> Assertions.assertThat(this).isEqualTo(expected.toJsonObject())
-    }
-}
 
 private infix fun String?.shouldBe(expected: String?) {
     when (expected) {
