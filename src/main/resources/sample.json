@@ -1,0 +1,25 @@
+{
+  "name": "sample-tree",
+  "root": {
+    "name": "package",
+    "children": [
+      {
+        "loop": true
+      },
+      {
+        "name": "class",
+        "children": [
+          {
+            "loop": true
+          },
+          {
+            "name": "method"
+          },
+          {
+            "name": "field"
+          }
+        ]
+      }
+    ]
+  }
+}
