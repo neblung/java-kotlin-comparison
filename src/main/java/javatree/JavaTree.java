@@ -36,46 +36,44 @@ public class JavaTree implements Tree {
     }
 
     private static class Builder {
-        private final Map<String, List<String>> childMap = new HashMap<>();
+        private final Map<String, List<String>> childNames = new HashMap<>();
         private final Collection<String> loops = new HashSet<>();
         private final LinkedList<String> nameStack = new LinkedList<>();
 
         JavaTree build(JsonObject root) {
             String rootName = walk(root);
-            return new JavaTree(rootName, childMap, loops);
+            return new JavaTree(rootName, childNames, loops);
         }
 
-        private String walk(JsonObject node) {
-            if (node.getBoolean("loop", false)) {
+        private String walk(JsonObject parent) {
+            if (isLoop(parent)) {
                 addLoopNode();
-                return null;// do not recurse. Loop nodes are always leaf nodes
+                return null; // do not recurse. Loop nodes are leaf nodes
             }
+            String parentName = nameOf(parent);
+            nameStack.push(parentName);
+            JsonArray children = children(parent);
+            childNames.put(parentName, children == null ? Collections.emptyList() : namesOf(children));
+            nameStack.pop();
+            return parentName;
+        }
+
+        private boolean isLoop(JsonObject node) {
+            return node.getBoolean("loop", false);
+        }
+
+        // NotNull
+        private String nameOf(JsonObject node) {
             String name = node.getString("name", null);
             if (name == null) {
                 throw badConfiguration("node without name");
             }
-            nameStack.push(name);
-            JsonArray children = children(node);
-            if (children != null) {
-                recurse(children);
-            }
-            nameStack.pop();
             return name;
         }
 
         private void addLoopNode() {
             loops.add(Optional.ofNullable(nameStack.peek()).orElseThrow(
                     () -> badConfiguration("LOOP IN ROOT")));
-        }
-
-        private void recurse(JsonArray children) {
-            String parentName = nameStack.peek();
-            List<String> childNames = children.stream() //
-                    .map(JsonObject.class::cast) //
-                    .map(this::walk) //
-                    .filter(Objects::nonNull) //
-                    .collect(Collectors.toList());
-            childMap.put(parentName, childNames);
         }
 
         // Nullable
@@ -88,6 +86,14 @@ public class JavaTree implements Tree {
             } else {
                 throw badConfiguration("children must be array: " + jsonValue.getValueType());
             }
+        }
+
+        private List<String> namesOf(JsonArray children) {
+            return children.stream() //
+                    .map(JsonObject.class::cast) //
+                    .map(this::walk) // recursion
+                    .filter(Objects::nonNull) //
+                    .collect(Collectors.toList());
         }
 
         private RuntimeException badConfiguration(String message) {

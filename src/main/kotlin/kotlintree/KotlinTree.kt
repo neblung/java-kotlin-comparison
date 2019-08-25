@@ -19,35 +19,35 @@ class KotlinTree(
 fun parse(jsonTree: JsonObject) = Builder().build(jsonTree.getJsonObject("root"))
 
 private class Builder {
-    private val childMap = mutableMapOf<String, List<String>>()
+    private val childNames = mutableMapOf<String, List<String>>()
     private val loops = mutableSetOf<String>()
     private val nameStack = LinkedList<String>()
 
     fun build(root: JsonObject): KotlinTree {
         val rootName = walk(root) ?: error("won't return null for root")
-        return KotlinTree(rootName, childMap, loops)
+        return KotlinTree(rootName, childNames, loops)
     }
 
-    private fun walk(node: JsonObject): String? {
-        if (node.getBoolean("loop", false)) {
+    private fun walk(parent: JsonObject): String? {
+        if (isLoop(parent)) {
             addLoopNode()
             return null // do not recurse. Loop nodes are always leaf nodes
         }
-        val name = node.getString("name", null) ?: badConfiguration("node without name")
-        nameStack.push(name)
-        children(node)?.let { recurse(it) }
+        val parentName = nameOf(parent)
+        nameStack.push(parentName)
+        childNames[parentName] = children(parent)?.let { namesOf(it) } ?: emptyList()
         nameStack.pop()
-        return name
+        return parentName
+    }
+
+    private fun isLoop(node: JsonObject) = node.getBoolean("loop", false)
+
+    private fun nameOf(node: JsonObject): String {
+        return node.getString("name", null) ?: badConfiguration("node without name")
     }
 
     private fun addLoopNode() {
         loops += nameStack.peek() ?: badConfiguration("LOOP IN ROOT")
-    }
-
-    private fun recurse(children: JsonArray) {
-        val parentName = nameStack.peek()
-        val childNames = children.mapNotNull { walk(it as JsonObject) }
-        childMap[parentName] = childNames
     }
 
     private fun children(parent: JsonObject): JsonArray? {
@@ -57,6 +57,8 @@ private class Builder {
             else -> badConfiguration("children must be array: ${value.valueType}")
         }
     }
+
+    private fun namesOf(children: JsonArray) = children.mapNotNull { walk(it as JsonObject) }
 
     private fun badConfiguration(message: String): Nothing {
         val path = nameStack.asReversed().joinToString(".")
