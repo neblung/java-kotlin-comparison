@@ -20,8 +20,7 @@ public class JavaTree implements Tree {
     }
 
     public static JavaTree parse(JsonObject jsonTree) {
-        JsonObject root = jsonTree.getJsonObject("root");
-        return new Builder().build(root);
+        return new Builder().build(jsonTree.getJsonObject("root"));
     }
 
     public String getRoot() {
@@ -39,7 +38,7 @@ public class JavaTree implements Tree {
     private static class Builder {
         private final Map<String, List<String>> childMap = new HashMap<>();
         private final Collection<String> loops = new HashSet<>();
-        private final Deque<String> nameStack = new LinkedList<>();
+        private final LinkedList<String> nameStack = new LinkedList<>();
 
         JavaTree build(JsonObject root) {
             String rootName = walk(root);
@@ -92,7 +91,7 @@ public class JavaTree implements Tree {
         }
 
         private RuntimeException badConfiguration(String message) {
-            Collections.reverse((List<?>) nameStack); // Seiteneffekt
+            Collections.reverse(nameStack); // side effect
             String path = String.join(".", nameStack);
             return new IllegalStateException(String.format("[%s] %s", path, message));
         }

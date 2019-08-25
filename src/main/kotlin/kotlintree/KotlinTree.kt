@@ -24,7 +24,7 @@ private class Builder {
     private val nameStack = LinkedList<String>()
 
     fun build(root: JsonObject): KotlinTree {
-        val rootName = walk(root) ?: error("returns never null for root")
+        val rootName = walk(root) ?: error("won't return null for root")
         return KotlinTree(rootName, childMap, loops)
     }
 
