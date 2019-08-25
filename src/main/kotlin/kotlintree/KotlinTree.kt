@@ -7,12 +7,12 @@ import javax.json.JsonObject
 import javax.json.JsonValue
 
 class KotlinTree(
-    private val _root: String,
+    private val root: String,
     private val childMap: Map<String, List<String>>,
-    private val _loops: Collection<String>
+    private val loops: Collection<String>
 ) : Tree {
-    override fun getRoot() = _root
-    override fun getLoops() = _loops
+    override fun getRoot() = root
+    override fun getLoops() = loops
     override fun getChildren(parent: String) = childMap[parent] ?: emptyList()
 }
 
