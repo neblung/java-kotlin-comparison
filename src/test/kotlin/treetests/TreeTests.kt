@@ -136,21 +136,3 @@ private infix fun String?.shouldBe(expected: String?) {
         else -> Assertions.assertThat(this).isEqualTo(expected)
     }
 }
-// Java-Varianten der Getter sind eigentlich noch gegen Veränderung zu schützen.
-// Bei API müssten wir das machen. Bei internals macht das natürlich keiner
-//
-// Zeremonie: member der Klasse (root, childMap, loops) tauchen in Java 4 Mal auf, in Kotlin 1 Mal
-// bei root, loops kommen noch 2 Nennungen wegen der Getter dazu
-//
-// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX!! Pfad zum Fehlerfall
-// addLoopNode: 6 Klammerpaare vs 2. Java Durchsicht verstellt.
-// Java-Variante obwohl klein, dennoch schwer zu verstehen
-// Konsequenz: Meide Optional<T>
-//
-// recurse():
-//   - streaming-API sperrig.  =>  for-Schleifen oft besser lesbar. Schade eigentlich
-//   - cast  as
-// children():
-//   - cast trotz instanceof
-//   - String-Interpolation
- 

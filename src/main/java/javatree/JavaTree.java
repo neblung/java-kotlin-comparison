@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 public class JavaTree implements Tree {
     private final String root;
-    private final Map<String, List<String>> childMap;
+    private final Map<String, List<String>> childNames;
     private final Collection<String> loops;
 
-    private JavaTree(String root, Map<String, List<String>> childMap, Collection<String> loops) {
+    private JavaTree(String root, Map<String, List<String>> childNames, Collection<String> loops) {
         this.root = root;
-        this.childMap = childMap;
+        this.childNames = childNames;
         this.loops = loops;
     }
 
@@ -23,14 +23,17 @@ public class JavaTree implements Tree {
         return new Builder().build(jsonTree.getJsonObject("root"));
     }
 
+    @Override
     public String getRoot() {
         return root;
     }
 
+    @Override
     public List<String> getChildren(String parent) {
-        return childMap.getOrDefault(parent, Collections.emptyList());
+        return childNames.getOrDefault(parent, Collections.emptyList());
     }
 
+    @Override
     public Collection<String> getLoops() {
         return loops;
     }
@@ -65,15 +68,11 @@ public class JavaTree implements Tree {
         // NotNull
         private String nameOf(JsonObject node) {
             String name = node.getString("name", null);
-            if (name == null) {
-                throw badConfiguration("node without name");
-            }
-            return name;
+            return Optional.ofNullable(name).orElseThrow(() -> badConfiguration(""));
         }
 
         private void addLoopNode() {
-            loops.add(Optional.ofNullable(nameStack.peek()).orElseThrow(
-                    () -> badConfiguration("LOOP IN ROOT")));
+            loops.add(Optional.ofNullable(nameStack.peek()).orElseThrow(() -> badConfiguration("LOOP IN ROOT")));
         }
 
         // Nullable
