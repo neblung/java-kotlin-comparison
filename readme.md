@@ -24,6 +24,7 @@ In Java braucht man pro Feld
  - Einen Konstruktor-Parameter
  - Die Zuweisung des Parameters an das Feld
 
+Java:
 
     public class JavaTree implements Tree {
         private final String root;
