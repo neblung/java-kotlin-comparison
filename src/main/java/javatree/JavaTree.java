@@ -77,13 +77,13 @@ public class JavaTree implements Tree {
 
         // Nullable
         private JsonArray children(JsonObject parent) {
-            JsonValue jsonValue = parent.get("children");
-            if (jsonValue == null || jsonValue.equals(JsonValue.NULL)) {
+            JsonValue value = parent.get("children");
+            if (value == null || value.equals(JsonValue.NULL)) {
                 return null;
-            } else if (jsonValue instanceof JsonArray) {
-                return (JsonArray) jsonValue;
+            } else if (value instanceof JsonArray) {
+                return (JsonArray) value;
             } else {
-                throw badConfiguration("children must be array: " + jsonValue.getValueType());
+                throw badConfiguration("children must be array: " + value.getValueType());
             }
         }
 
