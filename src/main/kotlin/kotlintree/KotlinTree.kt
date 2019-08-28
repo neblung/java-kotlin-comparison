@@ -42,12 +42,12 @@ private class Builder {
 
     private fun isLoop(node: JsonObject) = node.getBoolean("loop", false)
 
-    private fun nameOf(node: JsonObject): String {
-        return node.getString("name", null) ?: badConfiguration("node without name")
-    }
-
     private fun addLoopNode() {
         loops += nameStack.peek() ?: badConfiguration("LOOP IN ROOT")
+    }
+
+    private fun nameOf(node: JsonObject): String {
+        return node.getString("name", null) ?: badConfiguration("node without name")
     }
 
     private fun children(parent: JsonObject): JsonArray? {

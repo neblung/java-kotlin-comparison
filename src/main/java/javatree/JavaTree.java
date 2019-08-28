@@ -66,13 +66,13 @@ public class JavaTree implements Tree {
         }
 
         // NotNull
+        private void addLoopNode() {
+            loops.add(Optional.ofNullable(nameStack.peek()).orElseThrow(() -> badConfiguration("LOOP IN ROOT")));
+        }
+
         private String nameOf(JsonObject node) {
             String name = node.getString("name", null);
             return Optional.ofNullable(name).orElseThrow(() -> badConfiguration(""));
-        }
-
-        private void addLoopNode() {
-            loops.add(Optional.ofNullable(nameStack.peek()).orElseThrow(() -> badConfiguration("LOOP IN ROOT")));
         }
 
         // Nullable
