@@ -15,11 +15,12 @@ und damit letztlich auch eine Werbung für Kotlin.
 
 ### Code-Umfang
 Es fällt auf, dass die Java-Implementierung ca 50% mehr Quelltext benötigt als die Kotlin-Implementierung.
-Das liegt nicht an unserem spezillen Anwendungsfall, sondern ist typisch. Siehe [hier](https://kotlinlang.org/docs/reference/faq.html#what-advantages-does-kotlin-give-me-over-the-java-programming-language)
+Das liegt nicht an unserem speziellen Anwendungsfall, sondern ist typisch. Siehe [hier](https://kotlinlang.org/docs/reference/faq.html#what-advantages-does-kotlin-give-me-over-the-java-programming-language).
 
 ### Boilerplate
-Java ist geschwätzig, Kotlin ist kompakt. Fast jede Klasse initialisiert Felder durch den Konstruktor.
-In Java braucht man pro Feld
+Java ist geschwätzig, Kotlin ist kompakt. Typischerweise initialisiert eine Klasse ihre Felder durch den Konstruktor.
+(Im Konstruktor etwas anderes zu tun, als die Parameter an Felder zuzuweisen, ist ein [Anti-Pattern](http://misko.hevery.com/code-reviewers-guide/flaw-constructor-does-real-work/)).
+In Java braucht man dazu pro Feld
  - Eine Feld-Deklaration
  - Einen Konstruktor-Parameter
  - Die Zuweisung des Parameters an das Feld
