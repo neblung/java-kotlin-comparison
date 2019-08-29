@@ -68,7 +68,7 @@ public class JavaTree implements Tree {
         // NotNull
         private String nameOf(JsonObject node) {
             String name = node.getString("name", null);
-            return Optional.ofNullable(name).orElseThrow(() -> badConfiguration(""));
+            return Optional.ofNullable(name).orElseThrow(() -> badConfiguration("node without name"));
         }
 
         private void addLoopNode() {
@@ -98,7 +98,7 @@ public class JavaTree implements Tree {
         private RuntimeException badConfiguration(String message) {
             Collections.reverse(nameStack); // side effect
             String path = String.join(".", nameStack);
-            return new IllegalStateException(String.format("[%s] %s", path, message));
+            throw new IllegalStateException(String.format("[%s] %s", path, message));
         }
     }
 }
